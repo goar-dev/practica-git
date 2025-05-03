@@ -1,0 +1,160 @@
+# Tutorial de Git: Mezclas y Rebase
+
+En este tutorial aprenderás a combinar ramas en Git usando distintos métodos: **fast-forward merge**, **merge commit**, **resolución de conflictos** y **rebase**. Cada sección incluye teoría concisa y ejercicios prácticos.
+
+---
+
+## 1. Preparación
+
+1. Crea un repositorio nuevo y accede a él:
+
+   ```bash
+   mkdir practica-git
+   cd practica-git
+   git init
+   ```
+2. Crea un archivo inicial y haz commit en la rama `main`:
+
+   ```bash
+   echo "Versión inicial" > archivo.txt
+   git add archivo.txt
+   git commit -m "Commit inicial"
+   ```
+
+---
+
+## 2. Fast-Forward Merge
+
+Cuando la rama destino no avanza, Git simplemente mueve el puntero.
+
+### Pasos:
+
+1. Crea y cambia a la rama `feature-a`:
+
+   ```bash
+   git checkout -b feature-a
+   echo "Cambio A" >> archivo.txt
+   git commit -am "Añade cambio A"
+   ```
+2. Vuelve a `main` y haz merge:
+
+   ```bash
+   git checkout main
+   git merge feature-a
+   ```
+3. Observa que no se crea commit extra.
+
+### Ejercicio 1:
+
+* Crea rama `feature-b`, añade dos líneas distintas a `archivo.txt`, y haz fast-forward merge en `main`.
+
+---
+
+## 3. Merge Commit (Non-Fast-Forward)
+
+Ocurre cuando ambas ramas han avanzado.
+
+### Pasos:
+
+1. En `main` añade un cambio:
+
+   ```bash
+   git checkout main
+   echo "Cambio en main" >> archivo.txt
+   git commit -am "Commit en main"
+   ```
+2. Vuelve a `feature-a` y añade otro:
+
+   ```bash
+   git checkout feature-a
+   echo "Otro cambio A" >> archivo.txt
+   git commit -am "Otro cambio en feature-a"
+   ```
+3. Regresa a `main` y mezcla con `feature-a`:
+
+   ```bash
+   git checkout main
+   git merge feature-a
+   ```
+4. Verás un *merge commit* automático.
+
+### Ejercicio 2:
+
+* Crea `feature-c`, haz un cambio, vuelve a `main` y haz merge. Verifica el commit de mezcla.
+
+---
+
+## 4. Resolución de Conflictos
+
+Cuando editas la misma línea en dos ramas, Git reportará conflicto.
+
+### Pasos:
+
+1. En `main`, edita una línea:
+
+   ```bash
+   git checkout main
+   sed -i '1s/$/ (modificado en main)/' archivo.txt
+   git commit -am "Modifica línea en main"
+   ```
+2. En `feature-b`, modifica la misma línea:
+
+   ```bash
+   git checkout feature-b
+   sed -i '1s/$/ (modificado en feature-b)/' archivo.txt
+   git commit -am "Modifica línea en feature-b"
+   ```
+3. Regresa a `main` y haz merge:
+
+   ```bash
+   git checkout main
+   git merge feature-b
+   ```
+4. Abre `archivo.txt`, verás marcadores `<<<<<<<`, resuélvelos, guarda y:
+
+   ```bash
+   git add archivo.txt
+   git commit  # Finaliza el merge
+   ```
+
+### Ejercicio 3:
+
+* Genera conflicto entre `feature-c` y `main`, practica resolución.
+
+---
+
+## 5. Rebase
+
+Reubicación de commits para una historia lineal.
+
+### Pasos:
+
+1. Vuelve a `feature-a` y rebasea sobre `main`:
+
+   ```bash
+   git checkout feature-a
+   git rebase main
+   ```
+2. Observa cómo tus commits se reproducen tras los de `main`.
+3. Para integrar sin merge commit:
+
+   ```bash
+   git checkout main
+   git merge --ff-only feature-a
+   ```
+
+### Ejercicio 4:
+
+* Crea `feature-d`, añade commits, rebasea sobre `main`, y haz merge con `--ff-only`.
+
+---
+
+## 6. Buenas Prácticas
+
+* Usa `git pull --rebase` para mantener tu rama actualizada.
+* Prefiere **rebase** en ramas locales antes de compartirlas.
+* Reserva **merge commits** para releases o integraciones grandes.
+
+---
+
+> ¡Listo! Con estos ejercicios tendrás dominio sobre las distintas formas de mezclar código en Git. ¡A practicar!
